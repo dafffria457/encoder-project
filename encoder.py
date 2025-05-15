@@ -1,32 +1,48 @@
-def caesar_encrypt(text, shift):
-    """Шифрует текст с помощью шифра Цезаря"""
-    result = ""
+def caesar_cipher(text, shift, alphabet=None):
+    """Шифрует/дешифрует текст с помощью шифра Цезаря"""
+    if alphabet is None:
+        alphabet = (
+            'abcdefghijklmnopqrstuvwxyz'
+            'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+            'абвгдеёжзийклмнопрстуфхцчшщъыьэюя'
+            'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'
+        )
+    
+    result = []
     for char in text:
-        if char.isalpha():
-            shift_base = 65 if char.isupper() else 97
-            result += chr((ord(char) - shift_base + shift) % 26 + shift_base)
+        if char in alphabet:
+            idx = alphabet.index(char)
+            new_idx = (idx + shift) % len(alphabet)
+            result.append(alphabet[new_idx])
         else:
-            result += char
-    return result
+            result.append(char)
+    return ''.join(result)
 
-def caesar_decrypt(text, shift):
-    """Дешифрует текст, зашифрованный шифром Цезаря"""
-    return caesar_encrypt(text, -shift)
+def get_valid_shift():
+    """Получает корректный сдвиг от пользователя"""
+    while True:
+        try:
+            shift = int(input("Введите сдвиг (целое число): "))
+            return shift
+        except ValueError:
+            print("Ошибка: сдвиг должен быть целым числом")
 
 if __name__ == "__main__":
-    print("\n=== Шифратор/Дешифратор Цезаря ===")
+    print("\n=== Улучшенный шифратор Цезаря ===")
     print("1. Зашифровать сообщение")
     print("2. Расшифровать сообщение")
     
-    choice = input("Выберите действие (1/2): ")
-    message = input("Введите сообщение: ")
-    shift = int(input("Введите сдвиг (1-25): "))
+    while True:
+        choice = input("Выберите действие (1/2): ")
+        if choice in ('1', '2'):
+            break
+        print("Неверный выбор, попробуйте снова")
     
-    if choice == '1':
-        encrypted = caesar_encrypt(message, shift)
-        print("Зашифрованное сообщение:", encrypted)
-    elif choice == '2':
-        decrypted = caesar_decrypt(message, shift)
-        print("Расшифрованное сообщение:", decrypted)
-    else:
-        print("Неверный выбор")
+    message = input("Введите сообщение: ")
+    shift = get_valid_shift()
+    
+    if choice == '2':
+        shift = -shift
+    
+    result = caesar_cipher(message, shift)
+    print("\nРезультат:", result)
